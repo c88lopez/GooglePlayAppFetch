@@ -18,10 +18,11 @@ type Apps struct {
 
 // App structure
 type App struct {
-	Name         string
-	Developer    string
-	BundleID     string
-	AppStoreLink string
+	Name         string `json:"name"`
+	Developer    string `json:"developer"`
+	BundleID     string `json:"bundleID"`
+	AppStoreLink string `json:"appStoreLink"`
+	Icon         string `json:"icon"`
 }
 
 func main() {
@@ -36,7 +37,7 @@ func main() {
 	}
 
 	appList := []App{}
-	doc.Find(".card-list .card .card-content .details").Each(func(i int, s *goquery.Selection) {
+	doc.Find(".card-list .card .card-content").Each(func(i int, s *goquery.Selection) {
 		href, _ := s.Find("a.card-click-target").Attr("href")
 		aux, _ := url.Parse(href)
 
@@ -44,8 +45,15 @@ func main() {
 		appName := strings.Trim(s.Find("a.title").Text(), " ")
 		appDeveloper := strings.Trim(s.Find(".subtitle-container .subtitle").Text(), " ")
 		appLink := googlePlayURL + "apps/details?id=" + appID
+		appIconRaw, _ := s.Find("img.cover-image").Attr("src")
 
-		app := App{appName, appDeveloper, appID, appLink}
+		appIcon, _ := url.Parse(appIconRaw)
+
+		if "" == appIcon.Scheme {
+			appIcon.Scheme = "http"
+		}
+
+		app := App{appName, appDeveloper, appID, appLink, appIcon.String()}
 		appList = append(appList, app)
 	})
 
