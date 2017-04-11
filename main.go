@@ -28,6 +28,12 @@ type App struct {
 func main() {
 	// Configs
 	googlePlayURL := "https://play.google.com/store/"
+
+	if len(os.Args) != 2 {
+		fmt.Println("I just need a string to search...")
+		os.Exit(1)
+	}
+
 	querySearch := os.Args[1]
 
 	// Fetching the site
